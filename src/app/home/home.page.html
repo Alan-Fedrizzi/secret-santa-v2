@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title> Secret Santa V2 </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid>
+    <ion-row>
+      <ion-col class="ion-text-center" size-sm="6" offset-sm="3">
+        <ion-button (click)="run()" [disabled]="alreadyRun"> Run! </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="alreadyRun && !isLoading">
+      <ion-col class="ion-text-center" size-sm="6" offset-sm="3">
+        <ion-list>
+          <ion-item *ngFor="let participant of participants">
+            <ion-label>
+              {{ participant.nameFrom }} tirou {{ participant.nameTo }}
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="isLoading">
+      <ion-col class="ion-text-center" size-sm="6" offset-sm="3">
+        <ion-spinner color="primary"></ion-spinner>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
