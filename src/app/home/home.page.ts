@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { NgForm } from '@angular/forms';
 
 import { Participant } from './home-model';
-import { take, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -32,8 +33,12 @@ export class HomePage {
       emailFrom: 'sarah.fedrizzi@gmail.com',
     },
   ];
+  dataFromParticipants: Participant[];
   alreadyRun = false;
-  isLoading = false;
+  // isLoading = false;
+  firebaseId: string;
+  userName: string;
+  userGot: any;
 
   constructor(private http: HttpClient) {}
 
@@ -42,7 +47,7 @@ export class HomePage {
   }
 
   run() {
-    this.isLoading = true;
+    // this.isLoading = true;
     const participantsCopy = JSON.parse(JSON.stringify(this.participants));
 
     this.participants.forEach((_, index) => {
@@ -60,19 +65,50 @@ export class HomePage {
     console.log(this.participants);
     this.alreadyRun = true;
 
-    return (
-      this.http
-        .post(``, this.participants)
-        // .pipe(
-        //   tap((resData) => {
-        //     console.log(resData);
-        //   })
-        // )
-        .subscribe(() => {
-          this.isLoading = false;
+    return this.http
+      .post<{ name: string }>(``, this.participants)
+      .pipe(
+        tap((resData) => {
+          this.firebaseId = resData.name;
+          console.log(`this.firebaseId: ${this.firebaseId}`);
+          console.log(resData);
         })
-    );
+      )
+      .subscribe
+      // () => {this.isLoading = false;}
+      ();
 
     // enviar email - sendgrid
+  }
+
+  getData() {
+    // this.isLoading = true;
+    return this.http
+      .get<Participant[]>(``)
+      .pipe(
+        tap((resData) => {
+          // console.log(resData);
+          this.dataFromParticipants = resData;
+        })
+      )
+      .subscribe
+      // () => {this.isLoading = false;}
+      ();
+  }
+
+  onSubmit(form: NgForm) {
+    if (!form.valid) {
+      return;
+    }
+
+    // demos o nome do input de 'email'
+    const email = form.value.email;
+
+    this.dataFromParticipants.forEach((obj) => {
+      if (obj.emailFrom === email) {
+        this.userName = obj.nameFrom;
+        this.userGot = obj.nameTo;
+      }
+    });
   }
 }

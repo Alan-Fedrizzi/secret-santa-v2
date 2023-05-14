@@ -6,12 +6,18 @@
 
 <ion-content [fullscreen]="true">
   <ion-grid>
+    <!-- <ion-row *ngIf="isLoading">
+      <ion-col class="ion-text-center" size-sm="6" offset-sm="3">
+        <ion-spinner color="primary"></ion-spinner>
+      </ion-col>
+    </ion-row> -->
+
     <ion-row>
       <ion-col class="ion-text-center" size-sm="6" offset-sm="3">
         <ion-button (click)="run()" [disabled]="alreadyRun"> Run! </ion-button>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf="alreadyRun && !isLoading">
+    <ion-row *ngIf="alreadyRun">
       <ion-col class="ion-text-center" size-sm="6" offset-sm="3">
         <ion-list>
           <ion-item *ngFor="let participant of participants">
@@ -22,9 +28,50 @@
         </ion-list>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf="isLoading">
+
+    <ion-row *ngIf="alreadyRun">
       <ion-col class="ion-text-center" size-sm="6" offset-sm="3">
-        <ion-spinner color="primary"></ion-spinner>
+        <ion-button (click)="getData()" [disabled]="!alreadyRun">
+          I don't remeber who I got
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="dataFromParticipants">
+      <ion-col class="ion-text-center" size-sm="6" offset-sm="3">
+        <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+          <ion-list>
+            <ion-item>
+              <ion-label position="floating"> Type your e-mail: </ion-label>
+              <ion-input
+                type="email"
+                ngModel
+                name="email"
+                email
+                #emailCtrl="ngModel"
+              ></ion-input>
+            </ion-item>
+            <ion-item
+              *ngIf="!emailCtrl.valid && emailCtrl.touched"
+              lines="none"
+            >
+              <ion-label>Please insert a valid email address.</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-button (click)="onSubmit(f)" [disabled]="!alreadyRun">
+            Who did i get?
+          </ion-button>
+          <ion-item *ngIf="userName && userGot">
+            <ion-label> {{ userName }} tirou {{ userGot }} </ion-label>
+          </ion-item>
+        </form>
+        <!-- <ion-list>
+        <ion-item *ngFor="let participant of dataFromParticipants">
+          <ion-label>
+            {{ participant.nameFrom }} tirou {{ participant.nameTo }}
+          </ion-label>
+        </ion-item>
+      </ion-list> -->
       </ion-col>
     </ion-row>
   </ion-grid>
